@@ -110,3 +110,4 @@ source $ZSH/oh-my-zsh.sh
 # alias zshconfig="mate ~/.zshrc"
 # alias ohmyzsh="mate ~/.oh-my-zsh"
 alias config='/usr/bin/git --git-dir=/Users/andres/.cfg/ --work-tree=/Users/andres'
+export PATH="$PATH:/Users/andres/development/flutter/bin/flutter"
