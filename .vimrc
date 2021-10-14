@@ -2,47 +2,49 @@
 " Andres Ceballos Vimrc configuration
 """""""""""""""""""""""""""""""""""""
 
-"""" START Vundle Configuration
+"""" START Plug Configuration
 
-" Disable file type for vundle
-filetype off                  " required
-
-" set the runtime path to include Vundle and initialize
-set rtp+=~/.vim/bundle/Vundle.vim
-call vundle#begin()
-
-" let Vundle manage Vundle, required
-Plugin 'gmarik/Vundle.vim'
+call plug#begin('~/.vim/plugged')
 
 " Tools
-Plugin 'scrooloose/nerdtree'
-Plugin 'Xuyuanp/nerdtree-git-plugin'
-Plugin 'ctrlpvim/ctrlp.vim'
-Plugin 'shougo/neocomplete.vim'
-Plugin 'tmux-plugins/vim-tmux'
-Plugin 'tpope/vim-sensible'
+Plug 'airblade/vim-gitgutter'
+Plug 'christoomey/vim-tmux-navigator'
+Plug 'easymotion/vim-easymotion'
+Plug 'honza/vim-snippets'
+Plug 'junegunn/fzf', { 'do': { -> fzf#install() } }
+Plug 'junegunn/fzf.vim'
+Plug 'mattn/emmet-vim'
+Plug 'neoclide/coc.nvim', { 'branch': 'release' }
+Plug 'scrooloose/nerdcommenter'
+Plug 'scrooloose/nerdtree'
+Plug 'shougo/neocomplete.vim'
+Plug 'tmux-plugins/vim-tmux'
+Plug 'tpope/vim-fugitive'
+Plug 'tpope/vim-sensible'
+Plug 'Xuyuanp/nerdtree-git-plugin'
 
 " Elixir plugins
-Plugin 'elixir-editors/vim-elixir'
-"Plugin 'dense-analysis/ale'
-Plugin 'w0rp/ale'
+Plug 'elixir-editors/vim-elixir'
 
 " Theme / Interface
-Plugin 'vim-airline/vim-airline'
-Plugin 'vim-airline/vim-airline-themes'
-Plugin 'ryanoasis/vim-devicons'
-Plugin 'dracula/vim'
+Plug 'morhetz/gruvbox'
+Plug 'lifepillar/vim-solarized8'
+Plug 'ryanoasis/vim-devicons'
+Plug 'vim-airline/vim-airline'
+Plug 'vim-airline/vim-airline-themes'
 
-call vundle#end()            " required
-filetype plugin indent on    " required
-"""" END Vundle Configuration
-
+call plug#end()
 
 """""""""""""""""""""""""""""""""""""
 " Configuration Section
 """""""""""""""""""""""""""""""""""""
 set nowrap
 set hlsearch
+let mapleader=" "
+
+" Source Vim configuration file and install plugins
+nnoremap <silent><leader>1 :w \| :source ~/.vimrc<CR> 
+nnoremap <silent><leader>2 :PlugInstall<CR>
 
 " Remap aumetar decrecer
 nnoremap + <C-a>
@@ -50,12 +52,21 @@ nnoremap - <C-x>
 
 " Show what commands you’re typing
 set showcmd
+set showmatch
+set mouse=a
+set sw=2 
 
 " Show linenumbers
 set number
+set numberwidth=1
+set relativenumber
+
+" Config clipboard
+set clipboard=unnamed
 
 " Force the cursor onto a new line after 80 characters
 set textwidth=80
+
 " However, in Git commit messages, let’s make it 72 characters
 autocmd FileType gitcommit set textwidth=72
 
@@ -74,49 +85,130 @@ let g:elite_mode=1
 set cursorline
 
 " Theme and Styling
+set termguicolors
 syntax enable
-colorscheme dracula
+colorscheme solarized8
+
+if $BG_COLOR == 'dark'
+  set background=dark
+else
+  set background=light
+endif
 
 highlight Normal ctermbg=None
 
-" CtrlP configuration
-set wildignore+=*/tmp/*,*.so,*.swp,*.zip
-let g:ctrlp_working_path_mode='ca'
-let g:ctrlp_max_files = 1000
-let g:ctrlp_cmd = 'CtrlPMixed'
-set autochdir
+" Git Gutter
+nmap ) <Plug>(GitGutterNextHunk)
+nmap ( <Plug>(GitGutterPrevHunk)
+let g:gitgutter_enabled = 1
 
-" Elixir configuration
-set completeopt=menu,menuone,preview,noselect,noinsert
-let g:ale_completion_enabled = 1
+" Nerd Commenter
+filetype plugin on
+let g:NERDCreateDefaultMappings=1 "Create default mappings
+let g:NERDSpaceDelims=1 "Add spaces after comment delimiters by default
 
-augroup elixir
-  nnoremap <leader>r :! elixir %<cr>
-  autocmd FileType elixir nnoremap <c-]> :ALEGoToDefinition<cr>
-augroup END
+" Config easymotion
+nmap <Leader>s <Plug>(easymotion-s2)
 
-let g:ale_linters = {}
-let g:ale_linters.scss = ['stylelint']
-let g:ale_linters.css = ['stylelint']
-let g:ale_linters.elixir = ['elixir-ls', 'credo']
-let g:ale_linters.ruby = ['rubocop', 'ruby', 'solargraph']
+" coc cofig
+set completeopt=longest,menuone
 
-let g:ale_fixers = {'*': ['remove_trailing_lines', 'trim_whitespace']}
-let g:ale_fixers.javascript = ['eslint']
-let g:ale_fixers.scss = ['stylelint']
-let g:ale_fixers.css = ['stylelint']
-let g:ale_fixers.elm = ['format']
-let g:ale_fixers.ruby = ['rubocop']
-let g:ale_ruby_rubocop_executable = 'bundle'
-let g:ale_fixers.elixir = ['mix_format']
+" Use tab for trigger completion with characters ahead and navigate.
+inoremap <silent><expr> <TAB>
+      \ pumvisible() ? "\<C-n>" :
+      \ <SID>check_back_space() ? "\<TAB>" :
+      \ coc#refresh()
+inoremap <expr><S-TAB> pumvisible() ? "\<C-p>" : "\<C-h>"
 
-let g:ale_elixir_elixir_ls_release='/Users/andres/.ale/elixir-ls'
-let g:ale_sign_column_always = 1
+function! s:check_back_space() abort
+  let col = col('.') - 1
+  return !col || getline('.')[col - 1]  =~# '\s'
+endfunction
+
+" Use <c-space> to trigger completion.
+if has('nvim')
+  inoremap <silent><expr> <c-space> coc#refresh()
+else
+  inoremap <silent><expr> <c-@> coc#refresh()
+endif
+
+" Use <cr> to confirm completion, `<C-g>u` means break undo chain at current
+" position.
+if exists('*complete_info')
+  inoremap <expr> <cr> complete_info()["selected"] != "-1" ? "\<C-y>" : "\<C-g>u\<CR>"
+else
+  inoremap <expr> <cr> pumvisible() ? "\<C-y>" : "\<C-g>u\<CR>"
+endif
+
+" Use K to show documentation in preview window.
+nnoremap <silent> K :call <SID>show_documentation()<CR>
+
+function! s:show_documentation()
+  if (index(['vim','help'], &filetype) >= 0)
+    execute 'h '.expand('<cword>')
+  elseif (coc#rpc#ready())
+    call CocActionAsync('doHover')
+  else
+    execute '!' . &keywordprg . " " . expand('<cword>')
+  endif
+endfunction
+
+" set python verison to provider coc-snippets
+let g:python3_host_prog='/Users/andres/.asdf/shims/python3'
+" Use <C-l> for trigger snippet expand.
+imap <C-l> <Plug>(coc-snippets-expand)
+
+" Use <C-j> for select text for visual placeholder of snippet.
+vmap <C-j> <Plug>(coc-snippets-select)
+
+" Use <C-j> for jump to next placeholder, it's default of coc.nvim
+let g:coc_snippet_next = '<c-j>'
+
+" Use <C-k> for jump to previous placeholder, it's default of coc.nvim
+let g:coc_snippet_prev = '<c-k>'
+
+" Use <C-j> for both expand and jump (make expand higher priority.)
+imap <C-j> <Plug>(coc-snippets-expand-jump)
+
+" Use <leader>x for convert visual selected code to snippet
+xmap <leader>x  <Plug>(coc-convert-snippet)
+
+let g:coc_snippet_next = '<tab>'
+
+" fzf
+let g:fzf_command_prefix = 'Fzf'
+let g:fzf_layout = { 'window': { 'width': 0.9, 'height': 0.6 } }
+let g:fzf_commits_log_options = '--graph --color=always --format="%C(auto)%h%d %s %C(blue)%C(bold)%cr%C(white)"'
+autocmd! FileType fzf
+autocmd  FileType fzf set nonu nornu
+
+nnoremap <silent><leader>p :FzfFiles<CR>
+nnoremap <silent><leader>/ :FzfRg<CR>
+nnoremap <silent><leader>. :FzfFiles <C-r>=expand("%:h")<CR>/<CR>
+nnoremap <silent><leader>b :FzfBuffers<CR>
+nnoremap <silent><leader>g :FzfGFiles?
+nnoremap <silent><leader>] :FzfTags<CR>
+nnoremap <silent><leader>B :FzfBTags<CR>
+nnoremap <silent><leader>gc :FzfCommits<CR>
+nnoremap <silent><leader>gbc :FzfBCommits<CR>
+
+" CTRL-A CTRL-Q to select all and build quickfix list
+function! s:build_quickfix_list(lines)
+  call setqflist(map(copy(a:lines), '{ "filename": v:val }'))
+  copen
+  cc
+endfunction
+
+let g:fzf_action = {
+  \ 'ctrl-q': function('s:build_quickfix_list'),
+  \ 'ctrl-t': 'tab split',
+  \ 'ctrl-x': 'split',
+  \ 'ctrl-v': 'vsplit' }
 
 " Vim-Airline Configuration
 let g:airline#extensions#tabline#enabled = 1
 let g:airline_powerline_fonts = 1
-let g:airline_theme='dracula'
+let g:airline_theme='solarized'
 let g:webdevicons_enable_airline_statusline = 1
 
 " NerdTree
