@@ -9,19 +9,27 @@ call plug#begin('~/.vim/plugged')
 " Tools
 Plug 'airblade/vim-gitgutter'
 Plug 'christoomey/vim-tmux-navigator'
+Plug 'tmux-plugins/vim-tmux'
 Plug 'easymotion/vim-easymotion'
 Plug 'honza/vim-snippets'
 Plug 'junegunn/fzf', { 'do': { -> fzf#install() } }
 Plug 'junegunn/fzf.vim'
 Plug 'mattn/emmet-vim'
+Plug 'tpope/vim-surround'
 Plug 'neoclide/coc.nvim', { 'branch': 'release' }
 Plug 'scrooloose/nerdcommenter'
 Plug 'scrooloose/nerdtree'
 Plug 'shougo/neocomplete.vim'
-Plug 'tmux-plugins/vim-tmux'
 Plug 'tpope/vim-fugitive'
 Plug 'tpope/vim-sensible'
 Plug 'Xuyuanp/nerdtree-git-plugin'
+Plug 'nvim-lua/plenary.nvim'
+Plug 'nvim-telescope/telescope.nvim'
+Plug 'BurntSushi/ripgrep'
+Plug 'nvim-treesitter/nvim-treesitter'
+
+" Markdown / writting
+Plug 'dpelle/vim-languagetool'
 
 " Elixir plugins
 Plug 'elixir-editors/vim-elixir'
@@ -35,6 +43,10 @@ Plug 'vim-airline/vim-airline-themes'
 
 call plug#end()
 
+lua << EOF
+require('telescope')
+EOF
+
 """""""""""""""""""""""""""""""""""""
 " Configuration Section
 """""""""""""""""""""""""""""""""""""
@@ -42,11 +54,28 @@ set nowrap
 set hlsearch
 let mapleader=" "
 
-" Source Vim configuration file and install plugins
-nnoremap <silent><leader>1 :w \| :source ~/.vimrc<CR> 
-nnoremap <silent><leader>2 :PlugInstall<CR>
+" Buffer config
+nmap <leader>1 :bp<Cr>
+nmap <leader>2 :bn<Cr>
+nmap <leader>0 :bd<Cr>
+nmap <leader>w :w<Cr>
+nmap <leader>q :q<Cr>
 
-" Remap aumetar decrecer
+" Source Vim configuration file and install plugins
+nnoremap <silent><leader>r :w \| :so %<CR> 
+
+" Telescope
+nnoremap <leader>f <cmd>Telescope <cr>
+
+nnoremap <silent><leader>p :Telescope find_files<CR>
+nnoremap <silent><leader>/ :Telescope live_grep<CR>
+nnoremap <silent><leader>b :Telescope buffers<CR>
+nnoremap <silent><leader>gi :Telescope git_files
+nnoremap <silent><leader>z :Telescope oldfiles<CR>
+nnoremap <silent><leader>co :Telescope git_commits<CR>
+
+
+" Remap plus and minus
 nnoremap + <C-a>
 nnoremap - <C-x>
 
@@ -55,6 +84,8 @@ set showcmd
 set showmatch
 set mouse=a
 set sw=2 
+
+set scrolloff=7
 
 " Show linenumbers
 set number
@@ -84,6 +115,9 @@ let g:elite_mode=1
 " Enable highlighting of the current line
 set cursorline
 
+" LangugeTool
+:let g:languagetool_jar='~/languagetool/LanguageTool-5.5/languagetool-commandline.jar'
+
 " Theme and Styling
 set termguicolors
 syntax enable
@@ -101,6 +135,7 @@ highlight Normal ctermbg=None
 nmap ) <Plug>(GitGutterNextHunk)
 nmap ( <Plug>(GitGutterPrevHunk)
 let g:gitgutter_enabled = 1
+set updatetime=100
 
 " Nerd Commenter
 filetype plugin on
@@ -110,100 +145,6 @@ let g:NERDSpaceDelims=1 "Add spaces after comment delimiters by default
 " Config easymotion
 nmap <Leader>s <Plug>(easymotion-s2)
 
-" coc cofig
-set completeopt=longest,menuone
-
-" Use tab for trigger completion with characters ahead and navigate.
-inoremap <silent><expr> <TAB>
-      \ pumvisible() ? "\<C-n>" :
-      \ <SID>check_back_space() ? "\<TAB>" :
-      \ coc#refresh()
-inoremap <expr><S-TAB> pumvisible() ? "\<C-p>" : "\<C-h>"
-
-function! s:check_back_space() abort
-  let col = col('.') - 1
-  return !col || getline('.')[col - 1]  =~# '\s'
-endfunction
-
-" Use <c-space> to trigger completion.
-if has('nvim')
-  inoremap <silent><expr> <c-space> coc#refresh()
-else
-  inoremap <silent><expr> <c-@> coc#refresh()
-endif
-
-" Use <cr> to confirm completion, `<C-g>u` means break undo chain at current
-" position.
-if exists('*complete_info')
-  inoremap <expr> <cr> complete_info()["selected"] != "-1" ? "\<C-y>" : "\<C-g>u\<CR>"
-else
-  inoremap <expr> <cr> pumvisible() ? "\<C-y>" : "\<C-g>u\<CR>"
-endif
-
-" Use K to show documentation in preview window.
-nnoremap <silent> K :call <SID>show_documentation()<CR>
-
-function! s:show_documentation()
-  if (index(['vim','help'], &filetype) >= 0)
-    execute 'h '.expand('<cword>')
-  elseif (coc#rpc#ready())
-    call CocActionAsync('doHover')
-  else
-    execute '!' . &keywordprg . " " . expand('<cword>')
-  endif
-endfunction
-
-" set python verison to provider coc-snippets
-let g:python3_host_prog='/Users/andres/.asdf/shims/python3'
-" Use <C-l> for trigger snippet expand.
-imap <C-l> <Plug>(coc-snippets-expand)
-
-" Use <C-j> for select text for visual placeholder of snippet.
-vmap <C-j> <Plug>(coc-snippets-select)
-
-" Use <C-j> for jump to next placeholder, it's default of coc.nvim
-let g:coc_snippet_next = '<c-j>'
-
-" Use <C-k> for jump to previous placeholder, it's default of coc.nvim
-let g:coc_snippet_prev = '<c-k>'
-
-" Use <C-j> for both expand and jump (make expand higher priority.)
-imap <C-j> <Plug>(coc-snippets-expand-jump)
-
-" Use <leader>x for convert visual selected code to snippet
-xmap <leader>x  <Plug>(coc-convert-snippet)
-
-let g:coc_snippet_next = '<tab>'
-
-" fzf
-let g:fzf_command_prefix = 'Fzf'
-let g:fzf_layout = { 'window': { 'width': 0.9, 'height': 0.6 } }
-let g:fzf_commits_log_options = '--graph --color=always --format="%C(auto)%h%d %s %C(blue)%C(bold)%cr%C(white)"'
-autocmd! FileType fzf
-autocmd  FileType fzf set nonu nornu
-
-nnoremap <silent><leader>p :FzfFiles<CR>
-nnoremap <silent><leader>/ :FzfRg<CR>
-nnoremap <silent><leader>. :FzfFiles <C-r>=expand("%:h")<CR>/<CR>
-nnoremap <silent><leader>b :FzfBuffers<CR>
-nnoremap <silent><leader>g :FzfGFiles?
-nnoremap <silent><leader>] :FzfTags<CR>
-nnoremap <silent><leader>B :FzfBTags<CR>
-nnoremap <silent><leader>gc :FzfCommits<CR>
-nnoremap <silent><leader>gbc :FzfBCommits<CR>
-
-" CTRL-A CTRL-Q to select all and build quickfix list
-function! s:build_quickfix_list(lines)
-  call setqflist(map(copy(a:lines), '{ "filename": v:val }'))
-  copen
-  cc
-endfunction
-
-let g:fzf_action = {
-  \ 'ctrl-q': function('s:build_quickfix_list'),
-  \ 'ctrl-t': 'tab split',
-  \ 'ctrl-x': 'split',
-  \ 'ctrl-v': 'vsplit' }
 
 " Vim-Airline Configuration
 let g:airline#extensions#tabline#enabled = 1
