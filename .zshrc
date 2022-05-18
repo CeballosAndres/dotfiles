@@ -100,7 +100,6 @@ export PATH="/Users/andres/.samio/scripts/bin:$PATH"
 alias vim='nvim'
 alias v='nvim'
 alias ibrew="arch -x86_64 /usr/local/bin/brew"
-alias config='/usr/bin/git --git-dir=$HOME/.cfg/ --work-tree=$HOME'
 
 echo -e "\033Ptmux;\033\033\033]50;SetProfile=dark-theme\a\e\\"
 
