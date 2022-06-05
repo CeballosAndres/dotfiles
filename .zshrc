@@ -114,5 +114,29 @@ export KERL_CONFIGURE_OPTIONS="--disable-debug --without-javac"
 export CPPFLAGS="-I$(brew --prefix unixodbc)/include"
 export LDFLAGS="-L$(brew --prefix unixodbc)/lib"
 
+# For secrets
+source ~/.keychain-environment-variables.sh
+
+# AWS configuration example, after doing:
+# $  set-keychain-environment-variable AWS_ACCESS_KEY_ID
+#       provide: "AKIAYOURACCESSKEY"
+# $  set-keychain-environment-variable AWS_SECRET_ACCESS_KEY
+#       provide: "j1/yoursupersecret/password"
+export GITLAB_TOKEN_CFS=$(keychain-environment-variable GITLAB_TOKEN_CFS);
+
+#---------------------------------------------- chpwd pyvenv ---
+python_venv() {
+  MYVENV=./env
+  # when you cd into a folder that contains $MYVENV
+  [[ -d $MYVENV ]] && source $MYVENV/bin/activate > /dev/null 2>&1
+  # when you cd into a folder that doesn't
+  [[ ! -d $MYVENV ]] && deactivate > /dev/null 2>&1
+}
+autoload -U add-zsh-hook
+add-zsh-hook chpwd python_venv
+
+python_venv
+
+
 # To customize prompt, run `p10k configure` or edit ~/.p10k.zsh.
 [[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh
