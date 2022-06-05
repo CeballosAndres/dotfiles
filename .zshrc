@@ -5,47 +5,43 @@ if [[ -r "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh" ]]
   source "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh"
 fi
 
-# # Functions to change color
-# change_color(){
-#     sed -i -e "s/'dark'/'$1'/; s/'light'/'$1'/" ~/.tmux.conf
-#     export BG_COLOR=$1
-#     export BAT_THEME='Solarized ('$1')'
-# }
-#
-# # Switch to Solarized Dark if we are currently in dark mode
-# if [[ "$(uname -s)" == "Darwin" && ! -v BG_COLOR ]]; then
-#   val=$(defaults read -g AppleInterfaceStyle 2>/dev/null)
-#   if [[ $val == "Dark" ]]; then
-#     change_color 'dark'
-#   else
-#     change_color 'light'
-#   fi
-# fi
-#
-#
-# # Toggle between dark and light bg
-# tc(){
-#   if [[ $BG_COLOR == "dark" ]]; then
-#     change_color 'light'
-#   else
-#     change_color 'dark'
-#   fi
-#   source ~/.zshrc
-#   #tmux source ~/.tmux.conf
-#   clear
-# }
+# Configurations for specific SO
 
-# Clean variable
-# unset FZF_DEFAULT_OPTS
+case "$OSTYPE" in
+  darwin*)
+    # Auto completions for brew
+    chmod -R go-w "$(brew --prefix)/share"
+    if type brew &>/dev/null
+    then
+      FPATH="$(brew --prefix)/share/zsh/site-functions:${FPATH}"
+      autoload -Uz compinit
+      compinit
+    fi
+    # asdf variables to compile
+    # ! comented bc a warning related whit xwmax 
+    . /opt/homebrew/opt/asdf/libexec/asdf.sh
+    export CFLAGS="-O2 -g -fno-stack-check"
+    #export KERL_CONFIGURE_OPTIONS="--disable-hipe --with-ssl=$(brew --prefix openssl@1.1) --with-wx-config=$(brew --prefix wxmac)/bin/wx-config --with-odbc=$(brew --prefix unixodbc)" 
+    export KERL_CONFIGURE_OPTIONS="--disable-debug --without-javac"
+    export CPPFLAGS="-I$(brew --prefix unixodbc)/include"
+    export LDFLAGS="-L$(brew --prefix unixodbc)/lib"
 
-# Auto completions for brew
-chmod -R go-w "$(brew --prefix)/share"
-if type brew &>/dev/null
-then
-  FPATH="$(brew --prefix)/share/zsh/site-functions:${FPATH}"
-  autoload -Uz compinit
-  compinit
-fi
+    # For secrets
+    source ~/.keychain-environment-variables.sh
+
+    # AWS configuration example, after doing:
+    # $  set-keychain-environment-variable AWS_ACCESS_KEY_ID
+    #       provide: "AKIAYOURACCESSKEY"
+    # $  set-keychain-environment-variable AWS_SECRET_ACCESS_KEY
+    #       provide: "j1/yoursupersecret/password"
+    export GITLAB_TOKEN_CFS=$(keychain-environment-variable GITLAB_TOKEN_CFS);
+  ;;
+  linux*)
+
+  ;;
+esac
+
+
 
 # Path to your oh-my-zsh installation.
 export ZSH=~/.oh-my-zsh
@@ -105,24 +101,6 @@ echo -e "\033Ptmux;\033\033\033]50;SetProfile=dark-theme\a\e\\"
 
 bindkey '^ ' autosuggest-accept
 
-# asdf variables to compile
-# ! comented bc a warning related whit xwmax 
-. /opt/homebrew/opt/asdf/libexec/asdf.sh
-export CFLAGS="-O2 -g -fno-stack-check"
-#export KERL_CONFIGURE_OPTIONS="--disable-hipe --with-ssl=$(brew --prefix openssl@1.1) --with-wx-config=$(brew --prefix wxmac)/bin/wx-config --with-odbc=$(brew --prefix unixodbc)" 
-export KERL_CONFIGURE_OPTIONS="--disable-debug --without-javac"
-export CPPFLAGS="-I$(brew --prefix unixodbc)/include"
-export LDFLAGS="-L$(brew --prefix unixodbc)/lib"
-
-# For secrets
-source ~/.keychain-environment-variables.sh
-
-# AWS configuration example, after doing:
-# $  set-keychain-environment-variable AWS_ACCESS_KEY_ID
-#       provide: "AKIAYOURACCESSKEY"
-# $  set-keychain-environment-variable AWS_SECRET_ACCESS_KEY
-#       provide: "j1/yoursupersecret/password"
-export GITLAB_TOKEN_CFS=$(keychain-environment-variable GITLAB_TOKEN_CFS);
 
 #---------------------------------------------- chpwd pyvenv ---
 python_venv() {
