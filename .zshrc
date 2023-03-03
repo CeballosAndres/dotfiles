@@ -63,6 +63,7 @@ export FZF_PREVIEW_WINDOW='right:65%:nohidden'
 source ~/.completio.zsh
 
 plugins=(
+  wakatime
   git
   history
   tmux
@@ -78,6 +79,7 @@ export ZSH_TMUX_AUTOSTART=false
 # export ZSH_TMUX_ITERM2=true
 
 source $ZSH/oh-my-zsh.sh
+source <(lab completion zsh)
 
 # You may need to manually set your language environment
 export LANG=en_US.UTF-8
@@ -96,10 +98,40 @@ export PATH="/Users/andres/.samio/scripts/bin:$PATH"
 alias vim='nvim'
 alias v='nvim'
 alias ibrew="arch -x86_64 /usr/local/bin/brew"
+alias sw-remote='git remote rename origin temp && git remote rename upstream origin && git remote rename temp upstream&&git remote -v'
 
 echo -e "\033Ptmux;\033\033\033]50;SetProfile=dark-theme\a\e\\"
 
 bindkey '^ ' autosuggest-accept
+
+# gitlab
+git-fork(){
+   lab clone "$2"
+   cd "$3"
+   lab fork -g "$1" -r upstream
+   git remote rename origin temp && git remote rename upstream origin && git remote rename temp upstream && git remote -v
+   git submodule update --init --recursive
+   gco-sub() "$4"
+}
+
+gco-sub(){
+   git checkout "$1" --
+   cd core
+   if [[ "$1" == "testing" ]]; then
+      git checkout 2_0_testing
+   else
+      git checkout 2_0_master
+   fi
+   cd ../helpers
+   git checkout "$1" --
+   cd ../models
+   git checkout "$1" --
+   cd ../json_models
+   git checkout "$1" --
+   cd ../messages
+   git checkout "$1" --
+   cd ..
+}
 
 
 #---------------------------------------------- chpwd pyvenv ---
@@ -118,3 +150,7 @@ python_venv
 
 # To customize prompt, run `p10k configure` or edit ~/.p10k.zsh.
 [[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh
+export PATH="/opt/homebrew/opt/openjdk@11/bin:$PATH"
+
+# To customize prompt, run `p10k configure` or edit ~/.dotfiles/.p10k.zsh.
+[[ ! -f ~/.dotfiles/.p10k.zsh ]] || source ~/.dotfiles/.p10k.zsh

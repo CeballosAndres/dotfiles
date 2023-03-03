@@ -1,24 +1,9 @@
 local M = {}
 
-M.truzen = {
+M.hop = {
    n = {
-      ["<leader>ta"] = { "<cmd> TZAtaraxis <CR>", "   truzen ataraxis" },
-      ["<leader>tm"] = { "<cmd> TZMinimalist <CR>", "   truzen minimal" },
-      ["<leader>tf"] = { "<cmd> TZFocus <CR>", "   truzen focus" },
-   },
-}
-
-M.telescope = {
-   n = {
-      ["<leader>tt"] = { "<cmd> Telescope <CR>", "🔍 Telescope" },
+      ["<leader>s"] = { "<cmd> HopWord <CR>", "x Hope Word" },
    },
 }
 
 return M
-
--- -- Misc
--- map("n", "<leader>q", ":q <CR>")
--- map("n", "<leader>w", ":w <CR>")
---
--- -- Hop
--- map("n", "<leader>s", ":HopWord <CR>")

@@ -1,38 +1,31 @@
-local M = {}
+local on_attach = require("plugins.configs.lspconfig").on_attach
+local capabilities = require("plugins.configs.lspconfig").capabilities
 
-M.setup_lsp = function(attach, capabilities)
-	local lspconfig = require("lspconfig")
+local lspconfig = require "lspconfig"
 
-	-- Include the servers you want to have installed by default below
-	local servers = {
-		"bashls",
-		"cssls",
-		"emmet_ls",
-		"ltex",
-		"html",
-		"pyright",
-		"sumneko_lua",
-		"tsserver",
-	}
+local servers = {
+      "bashls",
+      "cssls",
+      "denols",
+      "elixirls",
+      "emmet_ls",
+      "html",
+      "ltex",
+      "lua_ls",
+      "marksman",
+      "pyright",
+      "terraformls",
+      "tsserver",
+      "yamlls",
+   }
 
-	for _, lsp in ipairs(servers) do
-		lspconfig[lsp].setup({
-			on_attach = function(client, bufnr)
-				attach(client, bufnr)
-				if lsp == "pyright" then
-					client.settings = {
-						pyright = {
-							reportUnusedFunction = false,
-						},
-					}
-				end
-				-- if lsp == "grammarly" then
-				-- 	client.filetypes = { "markdown", "python", "html" }
-				-- end
-			end,
-			capabilities = capabilities,
-		})
-	end
+for _, lsp in ipairs(servers) do
+  local opts = {
+    on_attach = on_attach,
+    capabilities = capabilities,
+  }
+  if lsp == "elixirls" then
+    opts.cmd = {"/Users/andres/.local/share/nvim/mason/bin/elixir-ls"}
+  end
+  lspconfig[lsp].setup(opts)
 end
-
-return M

@@ -10,11 +10,13 @@ local applicationHotkeys = {
    e = "Spark",
    f = "Finder",
    m = "Music",
+   n = "Notion",
    p = "System Preferences",
    q = "Google Chrome",
    t = "Telegram",
    v = "Visual Studio Code",
    w = "WhatsApp",
+   s = "Postman",
    z = "Bitrix",
 }
 
