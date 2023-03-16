@@ -7,6 +7,7 @@ return {
          require "custom.plugins.hop"
       end,
    },
+   ["vim-test/vim-test"] = {},
    -- ["goolord/alpha-nvim"] = { disable = false } -- enables dashboard
 
    -- Override plugin definition options
@@ -14,6 +15,15 @@ return {
       config = function()
          require "plugins.configs.lspconfig"
          require "custom.plugins.lspconfig"
+      end,
+   },
+
+   ["kylechui/nvim-surround"] = {
+      tag = "*", -- Use for stability; omit to use `main` branch for the latest features
+      config = function()
+         require("nvim-surround").setup {
+            -- Configuration here, or leave empty to use defaults
+         }
       end,
    },
 

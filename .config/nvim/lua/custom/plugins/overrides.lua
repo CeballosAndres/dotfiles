@@ -28,6 +28,7 @@ M.treesitter = {
       "regex",
       "scss",
       "toml",
+      "terraform",
       "typescript",
       "vim",
       "yaml",
