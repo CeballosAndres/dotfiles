@@ -4,7 +4,7 @@
 if [[ -r "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh" ]]; then
   source "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh"
 fi
-
+typeset -g POWERLEVEL9K_INSTANT_PROMPT=off
 # Configurations for specific SO
 
 case "$OSTYPE" in
@@ -35,9 +35,11 @@ case "$OSTYPE" in
     # $  set-keychain-environment-variable AWS_SECRET_ACCESS_KEY
     #       provide: "j1/yoursupersecret/password"
     export GITLAB_TOKEN_CFS=$(keychain-environment-variable GITLAB_TOKEN_CFS);
+    source ~/.completio.zsh
+    source <(lab completion zsh)
   ;;
   linux*)
-
+    . "$HOME/.asdf/asdf.sh"
   ;;
 esac
 
@@ -48,7 +50,6 @@ export ZSH=~/.oh-my-zsh
 
 # Color theme
 ZSH_THEME="powerlevel10k/powerlevel10k"
-POWERLEVEL9K_INSTANT_PROMPT=quiet
 # Avoid solow paste from clipboard
 DISABLE_MAGIC_FUNCTIONS="true"
 
@@ -60,10 +61,8 @@ export FZF_PREVIEW_WINDOW='right:65%:nohidden'
 
 # fpath+=${ZSH_CUSTOM:-${ZSH:-~/.oh-my-zsh}/custom}/plugins/zsh-completions/src
 
-source ~/.completio.zsh
 
 plugins=(
-  wakatime
   git
   history
   tmux
@@ -79,7 +78,6 @@ export ZSH_TMUX_AUTOSTART=false
 # export ZSH_TMUX_ITERM2=true
 
 source $ZSH/oh-my-zsh.sh
-source <(lab completion zsh)
 
 # You may need to manually set your language environment
 export LANG=en_US.UTF-8
@@ -148,9 +146,10 @@ add-zsh-hook chpwd python_venv
 python_venv
 
 
-# To customize prompt, run `p10k configure` or edit ~/.p10k.zsh.
+# # To customize prompt, run `p10k configure` or edit ~/.p10k.zsh.
 [[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh
-export PATH="/opt/homebrew/opt/openjdk@11/bin:$PATH"
+# export PATH="/opt/homebrew/opt/openjdk@11/bin:$PATH"
 
-# To customize prompt, run `p10k configure` or edit ~/.dotfiles/.p10k.zsh.
-[[ ! -f ~/.dotfiles/.p10k.zsh ]] || source ~/.dotfiles/.p10k.zsh
+# # To customize prompt, run `p10k configure` or edit ~/.dotfiles/.p10k.zsh.
+# [[ ! -f ~/.dotfiles/.p10k.zsh ]] || source ~/.dotfiles/.p10k.zsh
+
